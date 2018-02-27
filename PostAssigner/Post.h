@@ -43,6 +43,7 @@ namespace PostAssigner {
 	private: System::Windows::Forms::Label^  label2;
 	private: System::Windows::Forms::Label^  errorAddPerson;
 	private: System::Windows::Forms::Label^  label3;
+	private: System::Windows::Forms::Button^  button2;
 	protected:
 
 	private:
@@ -64,6 +65,7 @@ namespace PostAssigner {
 			this->label2 = (gcnew System::Windows::Forms::Label());
 			this->errorAddPerson = (gcnew System::Windows::Forms::Label());
 			this->label3 = (gcnew System::Windows::Forms::Label());
+			this->button2 = (gcnew System::Windows::Forms::Button());
 			this->SuspendLayout();
 			// 
 			// label1
@@ -89,7 +91,7 @@ namespace PostAssigner {
 			// 
 			// button1
 			// 
-			this->button1->Location = System::Drawing::Point(232, 78);
+			this->button1->Location = System::Drawing::Point(211, 77);
 			this->button1->Name = L"button1";
 			this->button1->Size = System::Drawing::Size(75, 23);
 			this->button1->TabIndex = 2;
@@ -109,7 +111,7 @@ namespace PostAssigner {
 			// errorAddPerson
 			// 
 			this->errorAddPerson->AutoSize = true;
-			this->errorAddPerson->Location = System::Drawing::Point(370, 84);
+			this->errorAddPerson->Location = System::Drawing::Point(408, 82);
 			this->errorAddPerson->Name = L"errorAddPerson";
 			this->errorAddPerson->Size = System::Drawing::Size(80, 13);
 			this->errorAddPerson->TabIndex = 4;
@@ -124,11 +126,22 @@ namespace PostAssigner {
 			this->label3->TabIndex = 5;
 			this->label3->Text = L"label3";
 			// 
+			// button2
+			// 
+			this->button2->Location = System::Drawing::Point(292, 77);
+			this->button2->Name = L"button2";
+			this->button2->Size = System::Drawing::Size(110, 23);
+			this->button2->TabIndex = 6;
+			this->button2->Text = L"Remove Person";
+			this->button2->UseVisualStyleBackColor = true;
+			this->button2->Click += gcnew System::EventHandler(this, &Post::button2_Click);
+			// 
 			// Post
 			// 
 			this->AutoScaleDimensions = System::Drawing::SizeF(6, 13);
 			this->AutoScaleMode = System::Windows::Forms::AutoScaleMode::Font;
 			this->ClientSize = System::Drawing::Size(500, 484);
+			this->Controls->Add(this->button2);
 			this->Controls->Add(this->label3);
 			this->Controls->Add(this->errorAddPerson);
 			this->Controls->Add(this->label2);
@@ -205,6 +218,64 @@ private: System::Void button1_Click(System::Object^  sender, System::EventArgs^ 
 	}
 }
 private: System::Void Post_Load(System::Object^  sender, System::EventArgs^  e) {
+}
+private: System::Void button2_Click(System::Object^  sender, System::EventArgs^  e) {
+	//Read in the user
+	String ^ input_name = textBox1->Text;
+
+	//Error check the input_name
+	if (String::IsNullOrEmpty(input_name) || String::IsNullOrWhiteSpace(input_name)) {
+
+	}
+	bool char_not_valid_error = false;
+	for (int i = 0; i < input_name->Length; i++) {
+		if (!Char::IsLetter(input_name[i])) {
+			if (input_name[i] != ' ') {
+				char_not_valid_error = true;
+			}
+		}
+	}
+	if (char_not_valid_error == true) {
+
+	}
+
+	//Check if the input_name already exists in the list of users
+	//Read in the file that contains the list of users
+	ArrayList^ users = gcnew ArrayList;
+
+	int count = 0;
+	String^ usersList = "textfile.txt";
+	try {
+		StreamReader^ din = File::OpenText(usersList);
+		String ^str;
+		while ((str = din->ReadLine()) != nullptr) {
+			count++;
+			users->Add(str);
+		}
+		din->Close();
+	}
+	catch (Exception ^e) {
+		if (dynamic_cast<FileNotFoundException^>(e)) {
+			Console::WriteLine("file '{0}' not found", usersList);
+		}
+		else {
+			Console::WriteLine("problem reading the file '{0}'", usersList);
+		}
+	}
+	if (!users->Contains(input_name)) {
+		//User does not exist
+	}
+	else {
+		//Remove the user
+		StreamWriter^ sw = gcnew StreamWriter(usersList);
+		users->Remove(input_name);
+		count--;
+		for (int i = 0; i < count; i++) {
+			sw->WriteLine(users[i]);
+		}
+		
+		sw->Close();
+	}
 }
 };
 }
